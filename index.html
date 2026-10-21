@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Self-Driving Car Sim - ray-cast sensors and a real autopilot</title>
+<meta name="description" content="A 2D driving simulator: procedural track, ray-cast sensor rays, a pure-pursuit autopilot that steers itself, manual mode, collisions and lap timing. Runs in your browser.">
+<meta name="theme-color" content="#ffffff">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <a class="brand" href="./"><span class="brand-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 16l1.5-4.5A2 2 0 0 1 8.4 10h7.2a2 2 0 0 1 1.9 1.5L19 16v3a1 1 0 0 1-1 1h-1a1 1 0 0 1-1-1v-.5H8V19a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1v-3Z"/><path d="M7 16h10"/><circle cx="12" cy="9.5" r=".7" fill="currentColor" stroke="none"/><path d="m12 9 4-3.2M12 9 8 5.8M12 9V4.5" opacity=".6"/></svg></span><span>Self-Driving Car Sim</span></a>
+    <nav class="site-nav">
+      <a class="nav-link" href="#sim">Simulator</a>
+      <a class="nav-link" href="#how">How it drives</a>
+      <a class="nav-link" href="#limits">Limits</a>
+    </nav>
+    <div class="header-actions">
+      <button class="btn btn-ghost btn-icon" data-theme-toggle aria-label="Toggle dark mode"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/></svg></button>
+      <button class="btn btn-ghost btn-icon menu-btn" aria-label="Menu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    </div>
+  </div>
+</header>
+
+<main class="page">
+  <section class="hero wrap rise" id="sim">
+    <span class="hero-eyebrow">Sensors in, steering out, every frame</span>
+    <h1>Watch a car drive itself</h1>
+    <p class="lede">A procedural track, a car with five ray-cast distance sensors, and a pure-pursuit autopilot that converts sensor readings into steering and throttle. Toggle sensor rays, switch to manual with the arrow keys, and try to beat the autopilot's lap.</p>
+    <div class="row row-wrap mt16">
+      <button class="btn btn-primary btn-lg" id="btnAuto">Autopilot: on</button>
+      <button class="btn btn-ghost btn-lg" id="btnTrack">New track</button>
+      <label class="small muted row" style="gap:6px"><input type="checkbox" id="optRays" checked> Show sensor rays</label>
+    </div>
+  </section>
+
+  <section class="wrap rise rise-1 mt16">
+    <div class="card" style="padding:12px">
+      <canvas id="cv" width="880" height="560" style="width:100%;border-radius:12px;display:block"></canvas>
+    </div>
+    <div class="grid grid-4 mt16" id="kpis"></div>
+  </section>
+
+  <section class="wrap rise rise-2 mt24" id="how">
+    <div class="card card-pad-lg">
+      <h2 class="mb16">How the autopilot works</h2>
+      <div class="grid grid-2">
+        <div class="stack">
+          <div class="card card-pad-sm"><b>Sense</b><p class="small muted mb0">Five rays project forward from the car (-60 to +60 degrees). Each ray returns the distance to the nearest wall - the same idea as a cheap lidar.</p></div>
+          <div class="card card-pad-sm"><b>Think</b><p class="small muted mb0">A pure-pursuit controller picks a lookahead point on the track centerline, steered toward it with a PID-style correction. Wider clearance ahead means more throttle; tight walls mean brake.</p></div>
+        </div>
+        <div class="stack">
+          <div class="card card-pad-sm"><b>Act</b><p class="small muted mb0">Steering angle and throttle apply to a simple bicycle-model car: position, heading and velocity integrated every frame at 60 fps.</p></div>
+          <div class="card card-pad-sm"><b>Crash</b><p class="small muted mb0">Touch a wall and the car resets to the start line. The lap timer keeps your best - in both autopilot and manual mode.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap rise rise-3 mt24 mb24" id="limits">
+    <div class="card card-pad-lg">
+      <h2 class="mb16">Honest limits</h2>
+      <ul class="cross-list">
+        <li>The autopilot is a deterministic controller, not a learned policy - it follows the track centerline with sensor-guided speed control. It will not generalize to traffic, only to this track family.</li>
+        <li>The physics is a 2D bicycle model: no tire slip, weight transfer or suspension.</li>
+        <li>Manual mode needs a keyboard; on mobile, watch the autopilot.</li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer"><div class="wrap">Self-Driving Car Sim - 2D bicycle model, ray-cast sensors, pure-pursuit control</div></footer>
+<script src="ui.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
